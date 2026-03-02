@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import json
 import os
+import html
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,6 +28,12 @@ st.markdown(
     .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
     /* 익명(챗봇) 아바타만 크게 */
     [data-testid="stChatMessage"] img { width: 52px !important; height: 52px !important; min-width: 52px !important; min-height: 52px !important; border-radius: 8px; }
+    /* 익명 이름: 폰트 크게, 이름-본문 간격 줄이기 */
+    .anon-name { font-size: 1.1rem !important; font-weight: 600 !important; margin-bottom: 0.2rem !important; margin-top: 0 !important; line-height: 1.2 !important; }
+    /* 익명 말풍선 안에서 이름 다음 요소 간격 */
+    [data-testid="stChatMessage"] .anon-name + * { margin-top: 0.2rem !important; }
+    /* 사용자 말풍선: 가로 4/5, 왼쪽 여백 */
+    .user-msg-inner { max-width: 80% !important; margin-left: auto !important; margin-right: 0 !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -309,11 +316,12 @@ def _chat_page(
     for msg in st.session_state[messages_key]:
         if msg["role"] == "assistant":
             with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
-                st.caption("익명")
+                st.markdown('<p class="anon-name">익명</p>', unsafe_allow_html=True)
                 st.markdown(msg["content"])
         else:
             with st.chat_message("user", avatar=AVATAR_USER_NONE):
-                st.markdown(msg["content"])
+                _esc = html.escape(msg["content"]).replace("\n", "<br>")
+                st.markdown(f'<div class="user-msg-inner">{_esc}</div>', unsafe_allow_html=True)
 
     # ── time-up: graceful transition ──
     if time_up:
@@ -339,10 +347,11 @@ def _chat_page(
         st.session_state[messages_key].append({"role": "user", "content": prompt})
 
         with st.chat_message("user", avatar=AVATAR_USER_NONE):
-            st.markdown(prompt)
+            _esc = html.escape(prompt).replace("\n", "<br>")
+            st.markdown(f'<div class="user-msg-inner">{_esc}</div>', unsafe_allow_html=True)
 
         with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
-            st.caption("익명")
+            st.markdown('<p class="anon-name">익명</p>', unsafe_allow_html=True)
             typing_placeholder = st.empty()
             with typing_placeholder.container():
                 components.html(
