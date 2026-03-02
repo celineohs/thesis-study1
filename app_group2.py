@@ -32,8 +32,9 @@ st.markdown(
     .anon-name { font-size: 1.1rem !important; font-weight: 600 !important; margin-bottom: 0.2rem !important; margin-top: 0 !important; line-height: 1.2 !important; }
     /* 익명 말풍선 안에서 이름 다음 요소 간격 */
     [data-testid="stChatMessage"] .anon-name + * { margin-top: 0.2rem !important; }
-    /* 사용자 말풍선: 가로 4/5, 왼쪽 여백 */
-    .user-msg-inner { max-width: 80% !important; margin-left: auto !important; margin-right: 0 !important; }
+    /* 사용자 말풍선(회색 배경 전체) 가로 4/5, 왼쪽 여백 */
+    [data-testid="stChatMessage"]:has(.user-msg-inner) > div > div:last-child,
+    [data-testid="stChatMessage"]:has(.user-msg-inner) > div > div:nth-child(2) { max-width: 80% !important; margin-left: auto !important; margin-right: 0 !important; }
     </style>
     """,
     unsafe_allow_html=True,
