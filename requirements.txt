@@ -2,3 +2,9 @@ streamlit>=1.28.0
 openai>=1.3.0
 python-dotenv>=1.0.0
 pandas>=2.0.0
+
+# API providers (install the one you plan to use)
+# pip install anthropic
+anthropic>=0.39.0
+# pip install google-generativeai
+google-generativeai>=0.8.0
