@@ -17,13 +17,16 @@ st.set_page_config(
 )
 
 # GPT 스타일 채팅: 왼쪽=익명(검은 프로필+이름), 오른쪽=사용자(프로필 없음)
-AVATAR_ANONYMOUS = "⬛"  # 검은 네모 (익명 조건)
+# 48x48 검은 네모 SVG (CSS로 더 크게 표시)
+AVATAR_ANONYMOUS = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
 AVATAR_USER_NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"  # 1x1 투명(프로필 없음)
 
 st.markdown(
     """
     <style>
     .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
+    /* 익명(챗봇) 아바타만 크게 */
+    [data-testid="stChatMessage"] img { width: 52px !important; height: 52px !important; min-width: 52px !important; min-height: 52px !important; border-radius: 8px; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -306,6 +309,7 @@ def _chat_page(
     for msg in st.session_state[messages_key]:
         if msg["role"] == "assistant":
             with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
+                st.caption("익명")
                 st.markdown(msg["content"])
         else:
             with st.chat_message("user", avatar=AVATAR_USER_NONE):
@@ -338,14 +342,29 @@ def _chat_page(
             st.markdown(prompt)
 
         with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
-            with st.spinner("응답 생성 중..."):
-                reply = get_ai_response(
-                    st.session_state[messages_key], effective_system
+            st.caption("익명")
+            typing_placeholder = st.empty()
+            with typing_placeholder.container():
+                components.html(
+                    """
+                    <style>
+                    .td { font-size: 1.2rem; letter-spacing: 2px; color: #333; }
+                    .td span { animation: td 0.6s ease-in-out infinite; }
+                    .td span:nth-child(2) { animation-delay: 0.2s; }
+                    .td span:nth-child(3) { animation-delay: 0.4s; }
+                    @keyframes td { 50% { opacity: 0.3; } }
+                    </style>
+                    <div class="td"><span>.</span><span>.</span><span>.</span></div>
+                    """,
+                    height=28,
                 )
-                st.markdown(reply)
-                st.session_state[messages_key].append(
-                    {"role": "assistant", "content": reply}
-                )
+            reply = get_ai_response(
+                st.session_state[messages_key], effective_system
+            )
+            typing_placeholder.markdown(reply)
+            st.session_state[messages_key].append(
+                {"role": "assistant", "content": reply}
+            )
 
         st.rerun()
 
