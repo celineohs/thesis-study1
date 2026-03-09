@@ -14,19 +14,28 @@
 2. [Streamlit Cloud](https://streamlit.io/cloud) 접속
 3. "New app" 클릭
 4. GitHub 저장소 선택
-5. **Secrets 설정**:
+5. **Secrets 설정** (로컬 .env 대신 사용):
    - Settings → Secrets
-   - 다음 형식으로 입력:
+   - TOML 형식 예시:
+     ```toml
+     API_PROVIDER = "anthropic"
+     ANTHROPIC_API_KEY = "sk-ant-your-key-here"
      ```
-     OPENAI_API_KEY=your_api_key_here
+     또는 OpenAI 사용 시:
+     ```toml
+     API_PROVIDER = "openai"
+     OPENAI_API_KEY = "your_openai_key_here"
      ```
-6. 배포 완료 후 공개 URL 받기
+   - `anon_se_collab_f.py` / `app_group2.py` 모두 동일한 Secrets로 구동 가능
+6. **메인 파일**: 배포할 앱에 따라 `app_group2.py` 또는 `anon_se_collab_f.py` 지정
+7. 배포 완료 후 공개 URL 받기
 
 ## 옵션 2: 로컬 서버 + ngrok
 
 1. 로컬에서 Streamlit 실행
    ```bash
-   streamlit run app.py
+   streamlit run app_group2.py
+   # 또는  streamlit run anon_se_collab_f.py
    ```
 
 2. ngrok 설치 및 실행

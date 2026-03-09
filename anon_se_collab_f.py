@@ -15,6 +15,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def _get_env(key: str, default: str = None) -> str:
+    """로컬은 .env(os.getenv), Streamlit Cloud는 Secrets(st.secrets)에서 읽기."""
+    try:
+        if hasattr(st, "secrets") and st.secrets is not None and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    return os.getenv(key, default)
+
+
 st.set_page_config(
     page_title="외국인 챗봇과 문화 교류 행사 기획",
     page_icon="💬",
@@ -38,7 +49,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-API_PROVIDER = os.getenv("API_PROVIDER", "openai").lower()
+API_PROVIDER = (_get_env("API_PROVIDER") or "openai").lower()
 CHAT_DURATION = 20 * 60  # 20 minutes
 
 # ──────────────────────────────────────────────
@@ -116,9 +127,9 @@ def get_ai_response(messages: list, system_prompt: str) -> str:
     try:
         if API_PROVIDER == "openai":
             from openai import OpenAI
-            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            client = OpenAI(api_key=_get_env("OPENAI_API_KEY"))
             resp = client.chat.completions.create(
-                model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+                model=_get_env("OPENAI_MODEL") or "gpt-4o-mini",
                 messages=[{"role": "system", "content": system_prompt}, *messages],
                 temperature=0.7,
                 max_tokens=800,
@@ -126,9 +137,9 @@ def get_ai_response(messages: list, system_prompt: str) -> str:
             return resp.choices[0].message.content
         elif API_PROVIDER == "anthropic":
             import anthropic
-            client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+            client = anthropic.Anthropic(api_key=_get_env("ANTHROPIC_API_KEY"))
             resp = client.messages.create(
-                model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
+                model=_get_env("ANTHROPIC_MODEL") or "claude-sonnet-4-20250514",
                 max_tokens=800,
                 system=system_prompt,
                 messages=messages,
@@ -136,9 +147,9 @@ def get_ai_response(messages: list, system_prompt: str) -> str:
             return resp.content[0].text
         elif API_PROVIDER == "gemini":
             import google.generativeai as genai
-            genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+            genai.configure(api_key=_get_env("GEMINI_API_KEY"))
             model = genai.GenerativeModel(
-                model_name=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+                model_name=_get_env("GEMINI_MODEL") or "gemini-2.0-flash",
                 system_instruction=system_prompt,
             )
             history = []
@@ -366,9 +377,12 @@ def page_complete():
 # ─── Main ───
 _KEY_MAP = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY", "gemini": "GEMINI_API_KEY"}
 _required_key = _KEY_MAP.get(API_PROVIDER)
-if _required_key and not os.getenv(_required_key):
+if _required_key and not _get_env(_required_key):
     st.error(f"⚠️ **{_required_key}** 가 설정되지 않았습니다.")
-    st.info(f"`.env` 파일에 `API_PROVIDER={API_PROVIDER}` 및 `{_required_key}=your_key_here` 를 추가해 주세요.")
+    st.info(
+        f"로컬: `.env`에 `API_PROVIDER={API_PROVIDER}` 및 `{_required_key}=your_key_here` 를 추가하세요. "
+        f"Streamlit Cloud: Settings → Secrets에 동일 키를 입력하세요."
+    )
     st.stop()
 
 if st.session_state.current_page == 1:

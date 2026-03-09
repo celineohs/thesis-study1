@@ -2,6 +2,18 @@
 
 IRB 승인 연구를 위한 Streamlit 기반 AI 챗봇 상호작용 플랫폼입니다.
 
+## 익명 조건 실험 플랫폼 (anon_se_collab_f)
+
+**동남아 유학생 챗봇과 문화 교류 행사 기획** 협업 대화(20분)용 앱입니다.
+
+- **실행**: `streamlit run anon_se_collab_f.py`
+- **흐름**: 안내 → 챗봇 대화(20분) → 완료
+- **멀티 API**: OpenAI / Claude(Anthropic) / Gemini 지원 (`.env`의 `API_PROVIDER`, 해당 API 키 설정)
+- **저장**: `conversations/anon_se_collab_f_{참여자ID}_{타임스탬프}.json`
+- Streamlit Cloud 배포 시 **Secrets**에 `API_PROVIDER`, `ANTHROPIC_API_KEY`(또는 사용할 API 키) 설정 시 정상 구동됩니다.
+
+---
+
 ## 집단 2 실험 플랫폼 (app_group2)
 
 참가자가 AI 챗봇과 **안내 → 일상 대화(5분) → 과제 안내 → 과제 대화(20분)** 순서로 진행하는 4단계 실험입니다.
@@ -76,9 +88,8 @@ IRB 승인 연구를 위한 Streamlit 기반 AI 챗봇 상호작용 플랫폼입
 
 ## 실행 방법
 
-```bash
-streamlit run app_group2.py
-```
+- **집단 2 실험**: `streamlit run app_group2.py`
+- **익명 조건 실험 (동남아 유학생 챗봇)**: `streamlit run anon_se_collab_f.py`
 
 브라우저에서 기본 주소 `http://localhost:8501` 로 열립니다.
 
@@ -88,7 +99,7 @@ streamlit run app_group2.py
 
 1. 이 저장소를 GitHub에 푸시한 뒤, [Streamlit Community Cloud](https://share.streamlit.io/)에서 **New app** → 저장소 연결.
 
-2. **메인 파일**: `app_group2.py` 지정.
+2. **메인 파일**: 사용할 앱에 맞게 `app_group2.py` 또는 `anon_se_collab_f.py` 지정.
 
 3. **Secrets** (배포 환경에서는 `.env` 대신 사용 권장):
    - 좌측 **Settings → Secrets** 에서 아래 형식으로 입력.
