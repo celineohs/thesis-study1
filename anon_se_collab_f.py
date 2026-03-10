@@ -11,6 +11,8 @@ import json
 import os
 import html
 import time
+import zipfile
+import io
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -283,12 +285,12 @@ def page_intro():
 
 안녕하세요. 본 실험에 참여해 주셔서 감사합니다.
 
-앞으로 20분 간, 귀하께서는 외국인 유학생 챗봇과 함께 **문화 교류 행사를 기획하기 위한 대화**를 하게 될 예정입니다.
-실험에 참여하시는 동안, 인터넷 검색 등 외부 활동은 최대한 자제해 주시고, 대화에 집중해 주시길 바랍니다.
+앞으로 20분 간, 귀하께서는 외국인 유학생 챗봇과 함께 **문화 교류 행사를 기획**하게 될 예정입니다.
+실험에 참여하시는 동안 인터넷 검색 등 외부 활동은 최대한 자제해 주시고, 대화에 집중해 주시길 바랍니다.
 
-### 과제: 외국인 챗봇과 문화 교류 행사 기획
+### 과제: 상대와 문화 교류 행사 기획
 
-- 챗봇(유학생)과 협력하여 **학내 문화 교류 행사**를 기획해 보세요.
+- 상대와 협력하여 **학내 문화 교류 행사**를 기획해 보세요.
 - 행사 아이디어, 장소·음식·비용 등 세부 사항, 그리고 이러한 과정에 대한 생각 등을 자연스럽게 나누시면 됩니다.
 - 편안하게 대화에 참여해 주세요.
 
@@ -399,6 +401,32 @@ if _required_key and not _get_env(_required_key):
         f"로컬: `.env`에 `API_PROVIDER={API_PROVIDER}` 및 `{_required_key}=your_key_here` 를 추가하세요. "
         f"Streamlit Cloud: Settings → Secrets에 동일 키를 입력하세요."
     )
+    st.stop()
+
+# 연구자용: URL에 ?download=1 있으면 대화 데이터 zip 다운로드 (Streamlit Cloud 등에서 저장된 conversations/ 확인용)
+if st.query_params.get("download") == "1":
+    st.markdown("## 연구자용: 대화 데이터 다운로드")
+    conv_dir = "conversations"
+    if os.path.isdir(conv_dir):
+        files = [f for f in os.listdir(conv_dir) if f.endswith(".json") and f.startswith("anon_se_collab_f_")]
+        if files:
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+                for f in files:
+                    zf.write(os.path.join(conv_dir, f), f)
+            buf.seek(0)
+            st.download_button(
+                "conversations 폴더 압축 다운로드 (zip)",
+                data=buf,
+                file_name=f"anon_se_collab_f_conversations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip",
+                mime="application/zip",
+                type="primary",
+            )
+            st.caption(f"파일 {len(files)}개: {', '.join(sorted(files)[:5])}{' ...' if len(files) > 5 else ''}")
+        else:
+            st.info("저장된 대화 파일이 없습니다.")
+    else:
+        st.info("conversations 폴더가 없습니다.")
     st.stop()
 
 if st.session_state.current_page == 1:
