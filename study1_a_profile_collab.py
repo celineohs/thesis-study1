@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-study1_e_profile_collab: 프로필 사진 조건, 이름 "Elena Novak", 동남아 유학생 챗봇과 문화 교류 행사 부스 기획 협업 대화 (20분)
-- study1_a_anon_collab 기반, 익명 대신 Elena Novak + 프로필 이미지 사용
+study1_a_profile_collab: 프로필 사진 조건, 이름 "Ayu Lestari", 동남아 유학생 챗봇과 문화 교류 행사 부스 기획 협업 대화 (20분)
+- study1_a_anon_collab와 플랫폼 차이 없음. 익명 대신 프로필 이미지 + Elena Novak 사용.
 """
 
 import streamlit as st
@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import json
 import os
+import base64
 import html
 import time
 import zipfile
@@ -17,18 +18,33 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 프로필 사진 경로 (스크립트 기준 상대 경로)
+# 프로필 사진: base64로 임베드하여 모든 환경에서 동일하게 표시
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROFILE_IMAGE_PATH = os.path.join(
     _SCRIPT_DIR,
     "Study 1",
     "Stimulus",
     "MEBeauty_2차검수",
-    "female_caucasian",
-    "_noah-buscher-AUM5vcnuYd4-unsplash.jpg",
+    "female_asian",
+    "_asian-girl-3113208_1920.jpg",
 )
-PARTNER_NAME = "Elena Novak"
-SAVE_PREFIX = "study1_e_profile_collab"
+AVATAR_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
+
+
+def _image_to_data_url(path: str) -> str:
+    if not path or not os.path.isfile(path):
+        return None
+    try:
+        with open(path, "rb") as f:
+            b = f.read()
+        return "data:image/jpeg;base64," + base64.b64encode(b).decode("ascii")
+    except Exception:
+        return None
+
+
+AVATAR_PARTNER = _image_to_data_url(PROFILE_IMAGE_PATH) or AVATAR_FALLBACK
+PARTNER_NAME = "Ayu Lestari"
+SAVE_PREFIX = "study1_a_profile_collab"
 
 
 def _get_env(key: str, default: str = None) -> str:
@@ -47,11 +63,7 @@ st.set_page_config(
     layout="centered",
 )
 
-# 챗봇 아바타: 프로필 사진 사용 (없으면 검은 정사각형 fallback)
-if os.path.isfile(PROFILE_IMAGE_PATH):
-    AVATAR_PARTNER = PROFILE_IMAGE_PATH
-else:
-    AVATAR_PARTNER = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
+# GPT 스타일 채팅: 왼쪽=파트너(프로필+이름), 오른쪽=사용자(프로필 없음)
 AVATAR_USER_NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
 st.markdown(
@@ -179,7 +191,7 @@ SYSTEM_PROMPT = """당신은 동남아시아 유학생 페르소나의 챗봇입
 # Session state
 # ──────────────────────────────────────────────
 _DEFAULTS = {
-    "current_page": 1,
+    "current_page": 1,  # 1=안내, 2=챗봇 대화, 3=완료
     "participant_id": None,
     "messages": [],
     "start_time": None,
@@ -350,6 +362,7 @@ def page_intro():
 
 
 def _chat_page():
+    # 챗봇 대화 페이지에는 '대화 시작하기' 버튼을 두지 않음. ID 없이 들어오면 안내로 돌려보냄.
     if st.session_state.participant_id is None:
         st.session_state.current_page = 1
         st.rerun()
@@ -359,6 +372,7 @@ def _chat_page():
     rem = _remaining(st.session_state.start_time, CHAT_DURATION)
     time_up = rem <= 0
 
+    # 타이머를 사이드바에 두어 대화가 길어져도 스크롤 시 항상 보이도록 함
     with st.sidebar:
         st.markdown("**⏱ 남은 시간**")
         if not time_up:
@@ -442,6 +456,7 @@ if _required_key and not _get_env(_required_key):
     )
     st.stop()
 
+# 연구자용: URL에 ?download=1 있으면 대화 데이터 zip 다운로드 (Streamlit Cloud 등에서 저장된 conversations/ 확인용)
 if st.query_params.get("download") == "1":
     st.markdown("## 연구자용: 대화 데이터 다운로드")
     conv_dir = "conversations"
