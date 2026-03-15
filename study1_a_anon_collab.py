@@ -31,8 +31,7 @@ def _get_env(key: str, default: str = None) -> str:
 st.set_page_config(
     page_title="외국인 챗봇과 문화 교류 행사 부스 기획",
     page_icon="💬",
-    layout="wide",
-    initial_sidebar_state="expanded",
+    layout="centered",
 )
 
 # GPT 스타일 채팅: 왼쪽=익명(검은 프로필+이름), 오른쪽=사용자(프로필 없음)
@@ -42,12 +41,10 @@ AVATAR_USER_NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALA
 st.markdown(
     """
     <style>
-    [data-testid="stAppViewContainer"] { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-    section.main { padding: 0 !important; }
-    section.main .block-container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-    .block-container { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-    [data-testid="stChatMessage"] img { width: 52px !important; height: 52px !important; min-width: 52px !important; min-height: 52px !important; border-radius: 8px; }
-    .anon-name { font-size: 1.1rem !important; font-weight: 600 !important; margin-bottom: 0.2rem !important; margin-top: 0 !important; line-height: 1.2 !important; }
+    .block-container { padding-top: 1.5rem; padding-bottom: 1rem; padding-left: 2.5rem; padding-right: 2.5rem; }
+    [data-testid="stChatMessage"] { font-size: 1.08rem !important; }
+    [data-testid="stChatMessage"] img { width: 60px !important; height: 60px !important; min-width: 60px !important; min-height: 60px !important; border-radius: 8px; }
+    .anon-name { font-size: 1.2rem !important; font-weight: 600 !important; margin-bottom: 0.2rem !important; margin-top: 0 !important; line-height: 1.2 !important; }
     [data-testid="stChatMessage"] .anon-name + * { margin-top: 0.2rem !important; }
     [data-testid="stChatMessage"]:has(.user-msg-inner) { max-width: 80% !important; margin-left: auto !important; margin-right: 0 !important; width: 80% !important; box-sizing: border-box !important; }
     </style>
