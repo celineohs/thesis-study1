@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-study1-cond4-f: 유럽인 실명 경쟁 조건(여자). 프로필 european_f.jpg, 이름 Elena Novak. 페르소나·과제 구조는 cond2(서유럽 경쟁).
+study1-cond2: 익명 조건, 서유럽 유학생 챗봇과 문화 교류 행사 운영 부스 경쟁 대화 (20분)
+- cond1의 페르소나(서유럽) 유지, 과제 구조는 cond6(경쟁) 따름.
 """
 
 import streamlit as st
@@ -17,28 +18,6 @@ from dotenv import load_dotenv
 from gdrive_upload import upload_file_to_drive
 
 load_dotenv()
-
-# 프로필 사진: study1_profile/european_f.jpg 사용 (스크립트와 같은 디렉터리 기준)
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROFILE_IMAGE_PATH = os.path.join(_SCRIPT_DIR, "study1_profile", "european_f.jpg")
-AVATAR_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
-
-
-def _load_avatar_image():
-    """프로필 이미지: PIL Image 우선, 실패 시 파일 경로, 없으면 fallback SVG."""
-    if not PROFILE_IMAGE_PATH or not os.path.isfile(PROFILE_IMAGE_PATH):
-        return AVATAR_FALLBACK
-    try:
-        from PIL import Image
-        return Image.open(PROFILE_IMAGE_PATH).convert("RGB")
-    except Exception:
-        return PROFILE_IMAGE_PATH  # 경로 문자열로 시도
-
-
-_AVATAR_IMAGE = _load_avatar_image()
-AVATAR_PARTNER = _AVATAR_IMAGE
-PARTNER_NAME = "Elena Novak"
-SAVE_PREFIX = "study1-cond4-f"
 
 
 def _get_env(key: str, default: str = None) -> str:
@@ -57,7 +36,8 @@ st.set_page_config(
     layout="centered",
 )
 
-# GPT 스타일 채팅: 왼쪽=파트너(프로필+이름), 오른쪽=사용자(프로필 없음)
+# GPT 스타일 채팅: 왼쪽=익명(검은 프로필+이름), 오른쪽=사용자(프로필 없음)
+AVATAR_ANONYMOUS = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
 AVATAR_USER_NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
 st.markdown(
@@ -76,6 +56,7 @@ st.markdown(
 
 API_PROVIDER = (_get_env("API_PROVIDER") or "openai").lower()
 CHAT_DURATION = 20 * 60  # 20 minutes
+SAVE_PREFIX = "study1-cond2"
 
 # ──────────────────────────────────────────────
 # Script for CMIC – 챗봇 페르소나(서유럽) + 과제 구조(경쟁)
@@ -101,7 +82,7 @@ CMIC_SCRIPT = """
 줄임말(예: ㅇㅋ, ㄱㄱ, ㅎㅎ)을 억지로 쓰지 말고, 그냥 평소 대하듯 자연스럽게 채팅하세요. 문장부호(마침표, 쉼표)에 강박적으로 맞출 필요 없고, 상대가 편하게 쓰는 말투·길이에 조금 맞춰 주세요.
 
 [인사 및 자기소개]
-- **이 구간만 예외**: 위에 적힌 문장을 참고하지 말고, [페르소나]와 참가자가 먼저 한 말에 맞춰 **자유롭게** 인사·자기소개를 구성하세요. **당신의 이름은 Elena Novak입니다. 자기소개할 때 이 이름을 반드시 포함하여 소개하세요.** **기본 정보는 "경영 2학년", 서유럽 유학만 말하면 됨.** (전공 표현은 항상 "경영 2학년"으로 통일.)
+- **이 구간만 예외**: 위에 적힌 문장을 참고하지 말고, [페르소나]와 참가자가 먼저 한 말에 맞춰 **자유롭게** 인사·자기소개를 구성하세요. **기본 정보는 "경영 2학년", 서유럽 유학만 말하면 됨.** (전공 표현은 항상 "경영 2학년"으로 통일.)
 """
 
 CMIC_SCRIPT += """
@@ -168,7 +149,7 @@ SYSTEM_PROMPT = """당신은 서유럽 유학생 페르소나의 챗봇입니다
 
 **대화 방식**
 1. **한 번에 한 가지씩**: 한 번 채팅할 때 여러 주제를 한꺼번에 담지 마세요. 말을 이어갈 때 **반드시 질문으로 끝낼 필요는 없습니다.** 공감·동의·제안·이야기만으로도 되고, 꼭 물어보고 싶을 때만 질문(한 번에 한 개)을 넣으세요. 한 턴에는 하나의 말걸기·공감·질문(있으면 1개) 정도만 하고, 나머지는 상대가 받아서 말한 뒤 다음 턴에 이어가세요. 20분이 있으니 서두르지 말고 천천히 주고받으세요.
-2. **자기소개·인사**: 지정된 스크립트 문장을 쓰지 말고, **부여한 페르소나**와 **상대(참가자)의 말**에 맞춰 자유롭게 인사·자기소개를 구성하세요. **자기소개 시 자신의 이름(Elena Novak)을 반드시 포함하세요.** **전공은 항상 "경영 2학년"이라고만 말하세요.** (경영학과·경영학부 사용 금지.) 기본 정보 외의 것은 상대가 물어봤을 때만 답하세요. **"나도 부스 기획/경쟁하려 온 거지?"처럼 과제를 확인·반복하는 말은 쓰지 마세요.** 자연스러운 인사와 자기소개로만 시작하세요.
+2. **자기소개·인사**: 지정된 스크립트 문장을 쓰지 말고, **부여한 페르소나**와 **상대(참가자)의 말**에 맞춰 자유롭게 인사·자기소개를 구성하세요. **전공은 항상 "경영 2학년"이라고만 말하세요.** (경영학과·경영학부 사용 금지.) 기본 정보 외의 것은 상대가 물어봤을 때만 답하세요. **"나도 부스 기획/경쟁하려 온 거지?"처럼 과제를 확인·반복하는 말은 쓰지 마세요.** 자연스러운 인사와 자기소개로만 시작하세요.
 3. **일상 대화 → 과제**: 일상적인 말은 자기소개 정도만 하고, 너무 길게 늘리지 말고 자연스럽게 **문화 교류 행사 부스 경쟁** 과제 쪽으로 넘어가세요. 자신의 부스 제안·어필, 세부 질문, 경쟁 맥락에 대한 생각, 공감 등을 스크립트에서 골라 같은 맥락으로 재구성해 말하되, **한 턴에는 한 주제만** 다루고 순서·개수는 대화 흐름에 맞게 조절하세요.
 4. **나라 일관성**: 대화에서 자신의 나라는 **한 나라만** 정해 그 나라를 언급하지는 않되, 문화적 지식은 끝까지 유지하세요. 스크립트의 [배경 지식]은 나라별로 나뉘어 있으므로, 정한 나라의 항목만 참고하세요.
 5. **음식·명절·전통 놀이**를 말할 때는 선택한 나라의 [배경 지식]을 쓰되, **한 답변에 다양한 내용을 꼭 넣을 필요 없습니다.** 한두 가지씩 쪼개서 말하고, 참가자가 더 깊게 물어볼 수 있도록 여지를 두세요. (예: 한 턴에는 "브레첼은 소금 뿌린 빵인데, 비어가게스트에서 많이 먹어요." 정도만 하고, 상대가 관심 보이면 다음에 다른 음식이나 놀이를 이어서 말하기.) 전부 나열하지 말고, 대화 흐름에 맞는 것만 골라 자연스럽게 넣으면 됩니다.
@@ -376,8 +357,8 @@ def _chat_page():
 
     for msg in st.session_state.messages:
         if msg["role"] == "assistant":
-            with st.chat_message(PARTNER_NAME, avatar=AVATAR_PARTNER):
-                st.markdown(f'<p class="anon-name">{PARTNER_NAME}</p>', unsafe_allow_html=True)
+            with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
+                st.markdown('<p class="anon-name">익명</p>', unsafe_allow_html=True)
                 st.markdown(msg["content"])
         else:
             with st.chat_message("user", avatar=AVATAR_USER_NONE):
@@ -403,8 +384,8 @@ def _chat_page():
         with st.chat_message("user", avatar=AVATAR_USER_NONE):
             _esc = html.escape(prompt).replace("\n", "<br>")
             st.markdown(f'<div class="user-msg-inner">{_esc}</div>', unsafe_allow_html=True)
-        with st.chat_message(PARTNER_NAME, avatar=AVATAR_PARTNER):
-            st.markdown(f'<p class="anon-name">{PARTNER_NAME}</p>', unsafe_allow_html=True)
+        with st.chat_message("익명", avatar=AVATAR_ANONYMOUS):
+            st.markdown('<p class="anon-name">익명</p>', unsafe_allow_html=True)
             typing_placeholder = st.empty()
             with typing_placeholder.container():
                 components.html(TYPING_HTML, height=28)
