@@ -372,7 +372,14 @@ def _chat_page():
             _go(3)
         return
 
-    effective_system = SYSTEM_PROMPT + "\n\n[CMIC_CONTEXT]\n" + CMIC_SCRIPT
+    # 중복 제거: CMIC_SCRIPT의 [배경 지식] 이후만 컨텍스트로 사용
+    # (페르소나/기본정보/말투 규칙은 SYSTEM_PROMPT에 이미 들어있음)
+    _CMIC_MARKER = "[배경 지식 - 나라별로 일관되게 사용]"
+    _CMIC_CONTEXT = CMIC_SCRIPT
+    _idx = CMIC_SCRIPT.find(_CMIC_MARKER)
+    if _idx != -1:
+        _CMIC_CONTEXT = CMIC_SCRIPT[_idx:]
+    effective_system = SYSTEM_PROMPT + "\n\n[CMIC_CONTEXT]\n" + _CMIC_CONTEXT
     if rem <= 60:
         effective_system = effective_system + "\n\n[현재] 대화 시간이 1분 남았습니다. 한두 문장으로 자연스럽게 마무리 인사해 주세요."
 
