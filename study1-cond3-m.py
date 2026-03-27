@@ -55,6 +55,7 @@ st.set_page_config(
     page_title="외국인 챗봇과 문화 교류 행사 부스 기획",
     page_icon="💬",
     layout="centered",
+    initial_sidebar_state="expanded",
 )
 
 # GPT 스타일 채팅: 왼쪽=파트너(프로필+이름), 오른쪽=사용자(프로필 없음)
