@@ -495,8 +495,8 @@ def page_complete():
         ok, msg = result
         if ok:
             st.caption("Google Drive에 업로드되었습니다.")
-        elif "미설정" not in msg:
-            st.caption(f"Google Drive: {msg}")
+        else:
+            st.warning(f"Google Drive 업로드 상태: {msg}")
 
 
 # ─── Main ───

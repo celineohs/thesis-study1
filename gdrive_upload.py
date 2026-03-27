@@ -116,7 +116,14 @@ def upload_file_to_drive(file_path: str, get_env) -> tuple:
             file_name = os.path.basename(file_path)
             metadata = {"name": file_name, "parents": [folder_id]}
             media = MediaFileUpload(file_path, mimetype="application/json", resumable=True)
-            service.files().create(body=metadata, media_body=media, fields="id").execute()
+
+            # Shared Drive 폴더 업로드 호환: supportsAllDrives=True
+            service.files().create(
+                body=metadata,
+                media_body=media,
+                fields="id",
+                supportsAllDrives=True,
+            ).execute()
             return True, "Google Drive 업로드 완료 (OAuth)"
         except Exception as e:
             return False, f"Google Drive 업로드 실패(OAuth): {e}"
@@ -131,7 +138,14 @@ def upload_file_to_drive(file_path: str, get_env) -> tuple:
         file_name = os.path.basename(file_path)
         metadata = {"name": file_name, "parents": [folder_id]}
         media = MediaFileUpload(file_path, mimetype="application/json", resumable=True)
-        service.files().create(body=metadata, media_body=media, fields="id").execute()
+
+        # Shared Drive 폴더 업로드 호환: supportsAllDrives=True
+        service.files().create(
+            body=metadata,
+            media_body=media,
+            fields="id",
+            supportsAllDrives=True,
+        ).execute()
         return True, "Google Drive 업로드 완료 (Service Account)"
     except Exception as e:
         return False, f"Google Drive 업로드 실패(Service Account): {e}"
