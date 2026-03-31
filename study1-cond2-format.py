@@ -57,7 +57,7 @@ st.markdown(
 API_PROVIDER = (_get_env("API_PROVIDER") or "openai").lower()
 CHAT_DURATION = 15 * 60  # 15 minutes
 BOOTH_IDEA_DURATION_SEC = 120  # 부스 아이디어 구성 단계 전체 2분
-BOOTH_IDEA_SUBMIT_AFTER_SEC = 60  # 1분 경과 후 제출(실험 참여하기) 가능
+BOOTH_IDEA_SUBMIT_AFTER_SEC = 60  # 1분 경과 후 제출(대화 시작하기) 가능
 SAVE_PREFIX = "study1-cond2-format"
 
 # ──────────────────────────────────────────────
@@ -442,15 +442,15 @@ def _booth_idea_footer_fragment():
     if rem > 0:
         _render_timer(rem)
     else:
-        st.warning("안내 시간(2분)이 지났습니다. 준비가 되셨다면 **실험 참여하기**로 대화를 시작해 주세요.")
+        st.warning("안내 시간(2분)이 지났습니다. 준비가 되셨다면 **대화 시작하기**로 대화를 시작해 주세요.")
 
     if not can_submit:
-        st.caption(f"**실험 참여하기**는 약 {wait_sec}초 후에 누를 수 있습니다 (1분 경과 후 제출 가능).")
+        st.caption(f"**대화 시작하기**는 약 {wait_sec}초 후에 누를 수 있습니다 (1분 경과 후 제출 가능).")
     else:
-        st.caption("이제 **실험 참여하기**를 눌러 대화를 시작할 수 있습니다.")
+        st.caption("이제 **대화 시작하기**를 눌러 대화를 시작할 수 있습니다.")
 
     if can_submit:
-        if st.button("실험 참여하기", type="primary", use_container_width=True, key="booth_join_btn_fmt_c2"):
+        if st.button("대화 시작하기", type="primary", use_container_width=True, key="booth_join_btn_fmt_c2"):
             idea = (st.session_state.get("booth_idea_core_fmt_c2") or "").strip()
             st.session_state.participant_booth_idea = idea
             st.session_state.start_time = datetime.now()
@@ -460,7 +460,7 @@ def _booth_idea_footer_fragment():
             _go(3)
     else:
         st.button(
-            "실험 참여하기",
+            "대화 시작하기",
             type="primary",
             use_container_width=True,
             disabled=True,
@@ -479,7 +479,11 @@ def page_booth_idea():
     st.markdown("## 🧩 부스 아이디어 구성")
     st.markdown(
         """
-대화를 시작하기 전에, 축제 부스 아이디어를 간단히 생각해주세요. 아래 창에 부스의 핵심 활동을 적어 주세요. 부스 아이디어 작성이 끝나고 나면, 하단의 **실험 참여하기** 버튼을 누르시면 외국인 유학생 챗봇과의 대화가 시작됩니다.
+대화를 시작하기 전에, 축제 부스 아이디어를 간단히 생각해주세요.
+
+아래 창에 부스의 핵심 활동을 적어 주세요.
+
+부스 아이디어 작성이 끝나고 나면, 하단의 **대화 시작하기** 버튼을 누르시면 외국인 유학생 챗봇과의 대화가 시작됩니다.
         """.strip()
     )
     st.text_area(
