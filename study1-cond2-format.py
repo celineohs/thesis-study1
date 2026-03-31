@@ -56,6 +56,8 @@ st.markdown(
 
 API_PROVIDER = (_get_env("API_PROVIDER") or "openai").lower()
 CHAT_DURATION = 15 * 60  # 15 minutes
+BOOTH_IDEA_DURATION_SEC = 120  # 부스 아이디어 구성 단계 전체 2분
+BOOTH_IDEA_SUBMIT_AFTER_SEC = 60  # 1분 경과 후 제출(실험 참여하기) 가능
 SAVE_PREFIX = "study1-cond2-format"
 
 # ──────────────────────────────────────────────
@@ -230,12 +232,14 @@ CMIC_USER_REFERENCE = CMIC_SCRIPT_BODY.strip()
 # Session state
 # ──────────────────────────────────────────────
 _DEFAULTS = {
-    "current_page": 1,  # 1=안내, 2=챗봇 대화, 3=완료
+    "current_page": 1,  # 1=안내, 2=부스 아이디어, 3=챗봇 대화, 4=완료
     "participant_id": None,
     "messages": [],
     "start_time": None,
     "completed": False,
     "conversation_saved": False,
+    "booth_idea_phase_start": None,
+    "participant_booth_idea": None,
 }
 TYPING_HTML = """<style>.td{font-size:1.2rem;letter-spacing:2px;color:#333}.td span{animation:td 0.6s ease-in-out infinite}.td span:nth-child(2){animation-delay:0.2s}.td span:nth-child(3){animation-delay:0.4s}@keyframes td{50%{opacity:0.3}}</style><div class="td"><span>.</span><span>.</span><span>.</span></div>"""
 for _k, _v in _DEFAULTS.items():
@@ -305,6 +309,7 @@ def _save():
         "saved_at": ts,
         "start_time": st.session_state.start_time.isoformat() if st.session_state.start_time else None,
         "duration_setting_sec": CHAT_DURATION,
+        "participant_booth_idea": st.session_state.get("participant_booth_idea"),
         "messages": st.session_state.messages,
     }
     with open(path, "w", encoding="utf-8") as f:
@@ -317,7 +322,7 @@ def _save():
 @st.fragment(run_every=timedelta(seconds=1))
 def _poll_chat_deadline():
     """대화 페이지에서만 주기 실행: 시간 종료 시 로컬 저장·Drive 업로드 후 st.rerun (브라우저 전체 새로고침 없음)."""
-    if st.session_state.get("current_page") != 2:
+    if st.session_state.get("current_page") != 3:
         return
     if st.session_state.get("conversation_saved"):
         return
@@ -361,7 +366,7 @@ def _render_timer(remaining_sec: float):
 
 def _progress():
     pg = st.session_state.current_page
-    labels = ["안내", "대화", "완료"]
+    labels = ["안내", "부스 아이디어", "대화", "완료"]
     cols = st.columns(len(labels))
     for i, (col, lbl) in enumerate(zip(cols, labels)):
         step = i + 1
@@ -389,37 +394,102 @@ def page_intro():
 
 안녕하세요. 본 실험에 참여해 주셔서 감사합니다.
 
-
-앞으로 15분 간, 귀하께서는 채팅을 통해 아래 과제에 참여하게 될 예정입니다.  
 실험에 참여하시는 동안 인터넷 검색 등 외부 활동은 최대한 자제해 주시고, 대화에 집중해 주시길 바랍니다.  
-불성실한 응답이 확인될 경우, 기존에 안내된 사례비 지급이 어려우니 유의 부탁드립니다.
+불성실한 응답이 확인될 경우 기존에 안내된 사례비 지급이 어려우니 유의 부탁드립니다.
 
-\n\n
-\n\n
-### 과제: 문화 교류 행사 운영 부스 경쟁
 
-- 귀하와 상대는 각각 **학내 문화 교류 행사에 운영할 문화 부스**를 기획하게 됩니다.
-- 사용할 수 있는 예산과 주요 자원은 제한되어 있으며, 두 사람의 부스 중 한 개만 최종적으로 우선 채택됩니다.
-- 부스 아이디어, 주제, 프로그램, 음식, 예상 비용 등 구체적인 내용을 제시해 주세요.
-- 자신의 부스안이 더 매력적이고 적합한 안으로 받아들여질 수 있도록 대화해 주세요.
+앞으로 귀하께서는 외국인 유학생 챗봇과 함께 아래 과제에 참여하게 될 예정입니다.
+
+
+### 과제: 문화 교류 행사 부스 기획
+
+- 귀하는 외국인 유학생 챗봇과 함께 **학내 문화 교류 행사에 운영할 하나의 문화 부스**를 기획하게 됩니다.
+- 대화를 통해 부스 아이디어, 주제, 프로그램, 음식, 예상 비용 등 구체적인 내용을 함께 정해 보세요.
+- 가능한 한 두 사람이 모두 동의할 수 있는 하나의 부스안을 만들어 보시기 바랍니다.
 - 대화 중에 떠오르는 생각이나 의견을 자유롭게 나누며 편안하게 대화에 참여해 주세요.
 
-\n\n
-\n\n
-준비가 되셨다면, 아래에 참여자 ID를 입력하고 **대화 시작하기** 버튼을 눌러 주세요.  
-채팅 창에 접속되면, 먼저 메시지를 보내 대화를 시작해 주세요.
+
+본격적인 대화를 시작하기 전에, 1~2분 동안 부스 아이디어를 간단히 생각할 시간을 드릴 예정입니다.  
+준비가 되셨다면, 아래에 참여자 ID를 입력하고 **실험 참여하기** 버튼을 눌러 주세요.
 
 ---
 """
     )
-    pid = st.text_input("참여자 ID", placeholder="예: P001", key="pid_input")
-    if st.button("대화 시작하기 →", type="primary", use_container_width=True, key="intro_start_btn"):
+    pid = st.text_input("참여자 ID", placeholder="예: P001", key="pid_input_fmt_c2")
+    if st.button("실험 참여하기", type="primary", use_container_width=True, key="intro_join_btn_fmt_c2"):
         if pid and pid.strip():
             st.session_state.participant_id = pid.strip()
-            st.session_state.start_time = datetime.now()
             _go(2)
         else:
             st.error("참여자 ID를 입력해 주세요.")
+
+
+@st.fragment(run_every=timedelta(seconds=1))
+def _booth_idea_footer_fragment():
+    """부스 아이디어 페이지( current_page==2 )에서만 타이머·제출 버튼 갱신."""
+    if st.session_state.get("current_page") != 2:
+        return
+    start = st.session_state.get("booth_idea_phase_start")
+    if start is None:
+        return
+    elapsed = (datetime.now() - start).total_seconds()
+    rem = max(0.0, BOOTH_IDEA_DURATION_SEC - elapsed)
+    can_submit = elapsed >= BOOTH_IDEA_SUBMIT_AFTER_SEC
+    wait_sec = max(0, int(BOOTH_IDEA_SUBMIT_AFTER_SEC - elapsed))
+
+    st.divider()
+    st.markdown("**⏱ 부스 아이디어 작성 시간** (총 2분)")
+    if rem > 0:
+        _render_timer(rem)
+    else:
+        st.warning("안내 시간(2분)이 지났습니다. 준비가 되셨다면 **실험 참여하기**로 대화를 시작해 주세요.")
+
+    if not can_submit:
+        st.caption(f"**실험 참여하기**는 약 {wait_sec}초 후에 누를 수 있습니다 (1분 경과 후 제출 가능).")
+    else:
+        st.caption("이제 **실험 참여하기**를 눌러 대화를 시작할 수 있습니다.")
+
+    if can_submit:
+        if st.button("실험 참여하기", type="primary", use_container_width=True, key="booth_join_btn_fmt_c2"):
+            idea = (st.session_state.get("booth_idea_core_fmt_c2") or "").strip()
+            st.session_state.participant_booth_idea = idea
+            st.session_state.start_time = datetime.now()
+            st.session_state.messages = []
+            st.session_state.conversation_saved = False
+            st.session_state.completed = False
+            _go(3)
+    else:
+        st.button(
+            "실험 참여하기",
+            type="primary",
+            use_container_width=True,
+            disabled=True,
+            key="booth_join_btn_disabled_fmt_c2",
+        )
+
+
+def page_booth_idea():
+    if st.session_state.participant_id is None:
+        st.session_state.current_page = 1
+        st.rerun()
+    _progress()
+    if st.session_state.get("booth_idea_phase_start") is None:
+        st.session_state.booth_idea_phase_start = datetime.now()
+
+    st.markdown("## 🧩 부스 아이디어 구성")
+    st.markdown(
+        """
+대화를 시작하기 전에, 축제 부스 아이디어를 간단히 생각해주세요. 아래 창에 부스의 핵심 활동을 적어 주세요. 부스 아이디어 작성이 끝나고 나면, 하단의 **실험 참여하기** 버튼을 누르시면 외국인 유학생 챗봇과의 대화가 시작됩니다.
+        """.strip()
+    )
+    st.text_area(
+        "부스의 핵심 활동",
+        height=160,
+        placeholder="이곳에 부스의 핵심 활동을 적어 주세요.",
+        key="booth_idea_core_fmt_c2",
+    )
+
+    _booth_idea_footer_fragment()
 
 
 def _chat_page():
@@ -476,12 +546,18 @@ def _chat_page():
             if not st.session_state.conversation_saved:
                 _save()
                 st.session_state.conversation_saved = True
-            _go(3)
+            _go(4)
         return
 
     # docs/CMIC_PROMPT_SPLIT.md: SYSTEM + [REFERENCE MATERIAL] + [CMIC_CONTEXT](배경 지식만)
+    pre_idea = st.session_state.get("participant_booth_idea")
+    pre_block = (
+        "\n\n[참가자 사전 작성: 부스 핵심 활동]\n"
+        + (pre_idea.strip() if isinstance(pre_idea, str) and pre_idea.strip() else "(작성 없음)")
+    )
     effective_system = (
         SYSTEM_PROMPT
+        + pre_block
         + "\n\n[REFERENCE MATERIAL]\n"
         + CMIC_USER_REFERENCE
         + "\n\n[CMIC_CONTEXT]\n"
@@ -566,6 +642,8 @@ if st.query_params.get("download") == "1":
 if st.session_state.current_page == 1:
     page_intro()
 elif st.session_state.current_page == 2:
+    page_booth_idea()
+elif st.session_state.current_page == 3:
     _chat_page()
 else:
     page_complete()
