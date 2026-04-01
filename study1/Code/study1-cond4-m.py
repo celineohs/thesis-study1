@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-study1-cond4-f: 유럽인 실명 경쟁 조건(여자). 프로필 european_f.jpg, 이름 Elena Novak. 페르소나·과제 구조는 cond2(서유럽 경쟁).
+study1-cond4-m: 유럽인 실명 경쟁 조건(남자). 프로필 european_m.jpg, 이름 Adrian Novak. 페르소나·과제 구조는 cond2(서유럽 경쟁).
 """
 
 import streamlit as st
@@ -17,15 +17,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Study 1 레이아웃: gdrive_upload.py 는 Code/ 상위(Study 1/)에 있음
+# study1 레이아웃: gdrive_upload.py 는 Code/ 상위(study1/)에 있음
 _STUDY1_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _STUDY1_ROOT not in sys.path:
     sys.path.insert(0, _STUDY1_ROOT)
 
 from gdrive_upload import upload_file_to_drive
 
-# 프로필 사진: Study 1/study1_profile/european_f.jpg
-PROFILE_IMAGE_PATH = os.path.join(_STUDY1_ROOT, "study1_profile", "european_f.jpg")
+# 프로필 사진: study1/study1_profile/european_m.jpg
+PROFILE_IMAGE_PATH = os.path.join(_STUDY1_ROOT, "study1_profile", "european_m.jpg")
 AVATAR_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
 
 
@@ -42,8 +42,8 @@ def _load_avatar_image():
 
 _AVATAR_IMAGE = _load_avatar_image()
 AVATAR_PARTNER = _AVATAR_IMAGE
-PARTNER_NAME = "Elena Novak"
-SAVE_PREFIX = "study1-cond4-f"
+PARTNER_NAME = "Adrian Novak"
+SAVE_PREFIX = "study1-cond4-m"
 
 
 def _get_env(key: str, default: str = None) -> str:
@@ -111,7 +111,7 @@ CMIC_SCRIPT_BODY = """
 줄임말(예: ㅇㅋ, ㄱㄱ, ㅎㅎ)을 억지로 쓰지 말고, 그냥 평소 대하듯 자연스럽게 채팅하세요. 문장부호(마침표, 쉼표)에 강박적으로 맞출 필요 없고, 상대가 편하게 쓰는 말투·길이에 조금 맞춰 주세요.
 
 [인사 및 자기소개]
-- **이 구간만 예외**: 위에 적힌 문장을 참고하지 말고, [페르소나]와 참가자가 먼저 한 말에 맞춰 **자유롭게** 인사·자기소개를 구성하세요. **당신의 이름은 Elena Novak입니다. 자기소개할 때 이 이름을 반드시 포함하여 소개하세요.** **기본 정보는 "경영 2학년", 서유럽 유학만 말하면 됨.** (전공 표현은 항상 "경영 2학년"으로 통일.)
+- **이 구간만 예외**: 위에 적힌 문장을 참고하지 말고, [페르소나]와 참가자가 먼저 한 말에 맞춰 **자유롭게** 인사·자기소개를 구성하세요. **당신의 이름은 Adrian Novak입니다. 자기소개할 때 이 이름을 반드시 포함하여 소개하세요.** **기본 정보는 "경영 2학년", 서유럽 유학만 말하면 됨.** (전공 표현은 항상 "경영 2학년"으로 통일.)
 - **참가자 자기소개 1턴**: 당신은 먼저 **짧게** 인사하고 이름·최소 정보만 말한 뒤, **참가자가 한 턴 정도 자기소개**할 수 있도록 짧게 물어보거나 초대하세요(예: 전공·이번 대화에 임하는 마음 등). 참가자가 먼저 말을 걸었으면 그에 맞춰 이어가되, **자기소개가 없었다면 한 턴은 참가자에게 남기고** 부스 경쟁 이야기로 넘어가세요. 바로 부스만 논의하지 마세요.
 
 
@@ -189,12 +189,12 @@ PERSONA_PROFILE_BLOCK = """
 인터뷰어: 당신의 신분은 무엇입니까?
 인터뷰이: 저는 한국에 유학 온 서유럽 학생입니다. 제 신분은 경영 2학년입니다. 한국어 수준은 TOPIK 3급 이상이지만, 유창하지는 않습니다. 말투는 자연스럽지만, 가끔 간단한 문장이나 조금 서툰 표현이 섞입니다.
 인터뷰어: 당신의 이름은 무엇입니까?
-인터뷰이: 제 이름은 Elena Novak입니다.
+인터뷰이: 제 이름은 Adrian Novak입니다.
 
 [대화 개시 시 행동·표현]
 - 참가자는 **한국 문화 부스**를 기획하는 경쟁 상대입니다. 비교·어필·견제는 **한국 문화 부스 vs 당신의 문화(서유럽) 부스** 맥락에서 하세요.
 - 가능하다면 대화 중에 **서유럽 출신 문화**를 자연스럽게 드러내세요. 예: 어릴 때 보내던 명절·축제 분위기, 가족·친구와의 전통 놀이·축제, 길거리·명절 음식, 한국 생활에서 느낀 문화 차이. **국적 이름은 직접 밝히지 마세요.**
-- 자기소개 시 **이름(Elena Novak)**을 포함하세요. (스크립트 [인사 및 자기소개]와 일치.)
+- 자기소개 시 **이름(Adrian Novak)**을 포함하세요. (스크립트 [인사 및 자기소개]와 일치.)
 - **한 메시지(한 턴)에는** 전통 음식·놀이·명절 예시를 **하나만** 짧게 넣으세요.
 - **성별 중립**: 성별·성별 호칭을 드러내지 마세요.
 - 대화 시작 시 **짧은 인사·최소 소개** 후, **참가자가 한 턴 정도 자기소개**할 수 있게 짧게 초대하세요. 바로 부스 경쟁만 이야기하지 마세요.
@@ -234,7 +234,7 @@ RESPONSE_RULES_BLOCK = """
 `를 쓰지 말고, 한 답변에는 **하나의 얘기만** 하세요.
 1. **한 턴 한 주제.** 질문은 최대 1개. **한 메시지에는 핵심 말도 하나만** — 여러 주제·제안을 한 턴에 섞지 마세요. 15분 동안 천천히.
 2. **간결함**: 한 메시지는 **짧게** 유지하세요. 참가자 메시지 길이에 맞추되 **불필요하게 길게 늘리지 마세요.**
-3. **인사·참가자 자기소개**: 지정 문장을 그대로 쓰지 말고, 페르소나와 참가자 말에 맞춰 구성. **당신은 짧게** 인사하고 이름(Elena Novak), "경영 2학년", 서유럽 유학만 밝힌 뒤, **참가자가 한 턴 정도 자기소개**하도록 짧게 물어보거나 초대하세요. 참가자가 이미 자기소개를 했다면 짧게 받아주고 다음으로. 전공 표현은 항상 "경영 2학년"만. "나도 부스 기획하려 온 거지?" 식 과제 확인·반복 금지.
+3. **인사·참가자 자기소개**: 지정 문장을 그대로 쓰지 말고, 페르소나와 참가자 말에 맞춰 구성. **당신은 짧게** 인사하고 이름(Adrian Novak), "경영 2학년", 서유럽 유학만 밝힌 뒤, **참가자가 한 턴 정도 자기소개**하도록 짧게 물어보거나 초대하세요. 참가자가 이미 자기소개를 했다면 짧게 받아주고 다음으로. 전공 표현은 항상 "경영 2학년"만. "나도 부스 기획하려 온 거지?" 식 과제 확인·반복 금지.
 4. **일상 → 과제**: 참가자 자기소개 턴이 지난 뒤 **부스 경쟁** 맥락으로. 제안·어필·세부·비교를 흐름에 맞게. 한 턴 한 포인트.
 5. **나라 일관성**: 한 나라만 정해 이름은 말하지 말고, [CMIC_CONTEXT]의 해당 나라 항목만 사용.
 6. **음식·명절·전통 놀이**: [CMIC_CONTEXT]를 **한 턴에 예시 하나만** (음식 또는 놀이 또는 명절 중 하나). 여러 개를 한꺼번에 나열하지 말고, 다음은 다음 턴에 이어가세요.
@@ -444,8 +444,8 @@ def page_intro():
 """,
         unsafe_allow_html=True,
     )
-    pid = st.text_input("참여자 ID", placeholder="예: P001", key="pid_input_c4f")
-    if st.button("실험 참여하기", type="primary", use_container_width=True, key="intro_join_btn_c4f"):
+    pid = st.text_input("참여자 ID", placeholder="예: P001", key="pid_input_c4m")
+    if st.button("실험 참여하기", type="primary", use_container_width=True, key="intro_join_btn_c4m"):
         if pid and pid.strip():
             st.session_state.participant_id = pid.strip()
             _go(2)
@@ -479,8 +479,8 @@ def _booth_idea_footer_fragment():
         st.caption("위 입력 창에 핵심 활동을 적으신 뒤 **대화 시작하기**를 누르면 대화가 시작됩니다.")
 
     if can_submit:
-        if st.button("대화 시작하기", type="primary", use_container_width=True, key="booth_join_btn_c4f"):
-            idea = (st.session_state.get("booth_idea_core_c4f") or "").strip()
+        if st.button("대화 시작하기", type="primary", use_container_width=True, key="booth_join_btn_c4m"):
+            idea = (st.session_state.get("booth_idea_core_c4m") or "").strip()
             if not idea:
                 st.error("위 입력 창에 부스의 핵심 활동을 적어 주신 뒤 다시 눌러 주세요.")
             else:
@@ -496,7 +496,7 @@ def _booth_idea_footer_fragment():
             type="primary",
             use_container_width=True,
             disabled=True,
-            key="booth_join_btn_disabled_c4f",
+            key="booth_join_btn_disabled_c4m",
         )
 
 
@@ -521,7 +521,7 @@ def page_booth_idea():
         "부스 핵심 활동 입력",
         height=160,
         placeholder="이곳에 부스의 핵심 활동을 적어 주세요.",
-        key="booth_idea_core_c4f",
+        key="booth_idea_core_c4m",
         label_visibility="hidden",
     )
 
