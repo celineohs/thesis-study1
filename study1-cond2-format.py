@@ -561,14 +561,8 @@ def _chat_page():
         return
 
     # docs/CMIC_PROMPT_SPLIT.md: SYSTEM + [REFERENCE MATERIAL] + [CMIC_CONTEXT](배경 지식만)
-    pre_idea = st.session_state.get("participant_booth_idea")
-    pre_block = (
-        "\n\n[참가자 사전 작성: 한국 문화 부스의 핵심 활동]\n"
-        + (pre_idea.strip() if isinstance(pre_idea, str) and pre_idea.strip() else "(작성 없음)")
-    )
     effective_system = (
         SYSTEM_PROMPT
-        + pre_block
         + "\n\n[REFERENCE MATERIAL]\n"
         + CMIC_USER_REFERENCE
         + "\n\n[CMIC_CONTEXT]\n"
