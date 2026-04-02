@@ -26,16 +26,17 @@
      API_PROVIDER = "openai"
      OPENAI_API_KEY = "your_openai_key_here"
      ```
-   - study1 조건 앱(`study1/Code/study1-cond*.py`)도 동일한 방식으로 Secrets 설정
-6. **메인 파일**: 배포할 조건에 따라 예) `study1/Code/study1-cond1.py` 지정
+   - 조건 앱(`Code/study1-cond*.py`. 모노레포 `2026prejudice`에서는 `study1/Code/...`)도 동일한 방식으로 Secrets 설정
+6. **메인 파일**: 배포할 조건에 따라 예) 단독 저장소 기준 `Code/study1-cond1.py` 지정 (모노레포면 `study1/Code/study1-cond1.py`)
 7. 배포 완료 후 공개 URL 받기
 
 ## 옵션 2: 로컬 서버 + ngrok
 
 1. 로컬에서 Streamlit 실행 (저장소 루트에서)
    ```bash
-   streamlit run "study1/Code/study1-cond1.py"
+   streamlit run "Code/study1-cond1.py"
    ```
+   (`2026prejudice` 모노레포: `study1/Code/study1-cond1.py`)
 
 2. ngrok 설치 및 실행
    ```bash

@@ -17,14 +17,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# study1 레이아웃: gdrive_upload.py 는 Code/ 상위(study1/)에 있음
+# 레이아웃: gdrive_upload.py 는 Code/의 상위(저장소 루트)에 있음
 _STUDY1_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _STUDY1_ROOT not in sys.path:
     sys.path.insert(0, _STUDY1_ROOT)
 
 from gdrive_upload import upload_file_to_drive
 
-# 프로필 사진: study1/study1_profile/european_m.jpg
+# 프로필 사진: 저장소 루트/study1_profile/european_m.jpg
 PROFILE_IMAGE_PATH = os.path.join(_STUDY1_ROOT, "study1_profile", "european_m.jpg")
 AVATAR_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCI+PHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMjAyMDIwIi8+PC9zdmc+"
 

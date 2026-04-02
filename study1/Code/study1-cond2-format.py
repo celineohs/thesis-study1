@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# study1 레이아웃: gdrive_upload.py 는 Code/ 상위(study1/)에 있음
+# 레이아웃: gdrive_upload.py 는 Code/의 상위(저장소 루트)에 있음
 _STUDY1_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _STUDY1_ROOT not in sys.path:
     sys.path.insert(0, _STUDY1_ROOT)
