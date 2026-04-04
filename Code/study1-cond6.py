@@ -480,13 +480,13 @@ def _booth_idea_footer_fragment():
     if not can_submit:
         st.caption(f"**대화 시작하기**는 약 {wait_sec}초 후에 누를 수 있습니다 (1분 경과 후 제출 가능).")
     else:
-        st.caption("위 입력 창에 핵심 활동을 적으신 뒤 **대화 시작하기**를 누르면 대화가 시작됩니다.")
+        st.caption("위 입력 창에 **부스에 반영할 한국 문화의 핵심 활동**을 적으신 뒤 **대화 시작하기**를 누르면 대화가 시작됩니다.")
 
     if can_submit:
         if st.button("대화 시작하기", type="primary", use_container_width=True, key="booth_join_btn_c6"):
             idea = (st.session_state.get("booth_idea_core_c6") or "").strip()
             if not idea:
-                st.error("위 입력 창에 부스의 핵심 활동을 적어 주신 뒤 다시 눌러 주세요.")
+                st.error("위 입력 창에 **부스에 반영할 한국 문화의 핵심 활동**을 적어 주신 뒤 다시 눌러 주세요.")
             else:
                 st.session_state.participant_booth_idea = idea
                 st.session_state.start_time = datetime.now()
@@ -515,7 +515,7 @@ def page_booth_idea():
     st.markdown("## 🧩 부스 아이디어 구성")
     _mb = "margin:0 0 1em 0;"
     st.markdown(
-        f'<p style="{_mb}">대화를 시작하기 전에, 축제 부스 아이디어를 간단히 생각해주세요.</p>'
+        f'<p style="{_mb}">대화를 시작하기 전에, 글로벌 문화 교류 행사 부스 아이디어를 간단히 생각해주세요.</p>'
         f'<p style="{_mb}">아래 창에 <strong>부스에 반영할 한국 문화의 핵심 활동</strong>을 적어 주세요.</p>'
         "<p style='margin:0;'>부스 아이디어 작성이 끝난 뒤, 하단의 <strong>대화 시작하기</strong> 버튼을 누르시면 "
         "외국인 유학생 챗봇과의 대화가 시작됩니다.</p>",
@@ -524,7 +524,7 @@ def page_booth_idea():
     st.text_area(
         "부스 핵심 활동 입력",
         height=160,
-        placeholder="이곳에 부스의 핵심 활동을 적어 주세요.",
+        placeholder="이곳에 부스에 반영할 한국 문화의 핵심 활동을 적어 주세요.",
         key="booth_idea_core_c6",
         label_visibility="hidden",
     )
